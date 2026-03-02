@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "**/web/templates/*.html": "jinja",
+    "**/web/templates/**/*.html": "jinja"
+  }
+}

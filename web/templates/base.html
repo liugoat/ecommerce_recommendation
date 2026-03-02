@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}基于爬虫的电商购物推荐平台{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-shopping-cart me-2"></i>电商推荐平台
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-home"></i> 首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('all_products') }}"><i class="fas fa-boxes"></i> 全部商品</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% set is_user = session.get('user_id') %}
+                    {% set is_admin_flag = session.get('is_admin') or session.get('role') == 'admin' %}
+                    {% if is_user or is_admin_flag %}
+                        {% if is_admin_flag %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin.index') }}"><i class="fas fa-cog"></i> 管理</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            {% if is_user %}
+                                <a class="nav-link" href="{{ url_for('user_recommendations', user_id=session.get('user_id')) }}">
+                                    <i class="fas fa-user"></i> {{ session.get('username') }}
+                                </a>
+                            {% elif is_admin_flag %}
+                                <a class="nav-link" href="{{ url_for('admin.index') }}"><i class="fas fa-user-shield"></i> 管理员</a>
+                            {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            {% if is_admin_flag and not is_user %}
+                                <a class="nav-link" href="{{ url_for('admin.admin_logout') }}"><i class="fas fa-sign-out-alt"></i> 退出</a>
+                            {% else %}
+                                <a class="nav-link" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> 退出</a>
+                            {% endif %}
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> 登录</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('register') }}"><i class="fas fa-user-plus"></i> 注册</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        <div class="search-container text-center">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="position-relative">
+                        <input type="text" class="form-control search-box" placeholder="搜索商品...">
+                        <span class="search-icon"><i class="fas fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-shopping-cart me-2"></i>电商推荐平台</h5>
+                    <p>基于爬虫技术和推荐算法的智能电商平台</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>功能模块</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}">热门推荐</a></li>
+                        <li><a href="{{ url_for('all_products') }}">全部商品</a></li>
+                        <li><a href="{{ url_for('index') }}">个性化推荐</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>联系方式</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope me-2"></i> contact@example.com</li>
+                        <li><i class="fas fa-phone me-2"></i> +86 123-4567-8900</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <!-- 版权信息已移除 -->
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

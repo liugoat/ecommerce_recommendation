@@ -1,0 +1,127 @@
+{% extends "admin_base.html" %}
+
+{% block admin_content %}
+<h1 class="mb-3">数据看板</h1>
+<div class="dashboard-grid">
+  <section class="chart-card">
+    <h5>30天购买趋势</h5>
+    <div id="trend" class="chart-box"></div>
+  </section>
+  <section class="chart-card">
+    <h5>Top 10 热销商品</h5>
+    <div id="topn" class="chart-box"></div>
+  </section>
+  <section class="chart-card">
+    <h5>分类收入分布</h5>
+    <div id="bycat" class="chart-box"></div>
+  </section>
+  <section class="chart-card">
+    <h5>评论情感概览</h5>
+    <div id="sentiment" class="chart-box chart-box-sm"></div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+  async function fetchJson(path) {
+    const res = await fetch(path);
+    return res.json();
+  }
+
+  function ensureChart(elId) {
+    const el = document.getElementById(elId);
+    if (!el) return null;
+    return echarts.init(el);
+  }
+
+  function bindResize(charts) {
+    window.addEventListener('resize', () => charts.forEach(c => c && c.resize()));
+  }
+
+  function emptyState(chart, title) {
+    chart.setOption({
+      title: { text: title },
+      graphic: {
+        type: 'text', left: 'center', top: 'middle',
+        style: { text: '暂无数据', fill: '#9aa0a6', fontSize: 16 }
+      }
+    });
+  }
+
+  Promise.all([
+    fetchJson('/api/analytics/sales_trend?days=30'),
+    fetchJson('/api/analytics/top_products?n=10'),
+    fetchJson('/api/analytics/revenue_by_category'),
+    fetchJson('/api/analytics/review_sentiment')
+  ]).then(([trendData, topData, bycatData, sentimentData]) => {
+    const trend = ensureChart('trend');
+    const topn = ensureChart('topn');
+    const bycat = ensureChart('bycat');
+    const sentiment = ensureChart('sentiment');
+    bindResize([trend, topn, bycat, sentiment]);
+
+    if (trend) {
+      if (!trendData || trendData.length === 0) {
+        emptyState(trend, '30天购买趋势');
+      } else {
+        trend.setOption({
+          tooltip: { trigger: 'axis' },
+          xAxis: { type: 'category', data: trendData.map(d => d.day) },
+          yAxis: { type: 'value' },
+          series: [{ data: trendData.map(d => d.buys), type: 'line', smooth: true, areaStyle: {} }]
+        });
+      }
+    }
+
+    if (topn) {
+      if (!topData || topData.length === 0) {
+        emptyState(topn, 'Top 10 热销商品');
+      } else {
+        topn.setOption({
+          tooltip: {},
+          grid: { left: 80, right: 20, top: 20, bottom: 20 },
+          xAxis: { type: 'value' },
+          yAxis: { type: 'category', data: topData.map(d => d.name), inverse: true },
+          series: [{ data: topData.map(d => d.buys), type: 'bar' }]
+        });
+      }
+    }
+
+    if (bycat) {
+      if (!bycatData || bycatData.length === 0) {
+        emptyState(bycat, '分类收入分布');
+      } else {
+        bycat.setOption({
+          tooltip: { trigger: 'item' },
+          legend: { bottom: 0 },
+          series: [{
+            type: 'pie',
+            radius: ['35%', '65%'],
+            data: bycatData.map(d => ({ value: d.revenue || 0, name: d.category || '未分类' }))
+          }]
+        });
+      }
+    }
+
+    if (sentiment) {
+      const vals = [
+        sentimentData?.positive || 0,
+        sentimentData?.neutral || 0,
+        sentimentData?.negative || 0
+      ];
+      if (vals.every(v => v === 0)) {
+        emptyState(sentiment, '评论情感概览');
+      } else {
+        sentiment.setOption({
+          tooltip: {},
+          xAxis: { type: 'category', data: ['正向', '中性', '负向'] },
+          yAxis: { type: 'value' },
+          series: [{ data: vals, type: 'bar', itemStyle: { color: '#3b82f6' } }]
+        });
+      }
+    }
+  });
+</script>
+{% endblock %}

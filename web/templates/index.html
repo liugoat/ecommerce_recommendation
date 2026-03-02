@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - 电商推荐平台{% endblock %}
+
+{% macro product_grid(products, empty_text='暂无数据') %}
+{% if products %}
+<div class="row">
+  {% for product in products %}
+  <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+    <div class="product-card h-100" data-product-id="{{ product.id }}">
+      <div class="card-body d-flex flex-column">
+        <div class="category-tag">{{ product.category_display or product.category }}</div>
+        <h5 class="card-title">{{ product.name }}</h5>
+        <div class="mt-auto">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="price">$ {{ "%.2f"|format(product.price or 0) }}</span>
+            <span class="sales"><i class="fas fa-shopping-cart"></i> 销量 {{ product.sales or 0 }}</span>
+          </div>
+          <div class="mt-3">
+            <a href="{{ url_for('similar_products', product_id=product.id) }}" class="btn btn-outline-primary btn-sm w-100">
+              <i class="fas fa-sync-alt me-1"></i> 找相似
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-light border">{{ empty_text }}</div>
+{% endif %}
+{% endmacro %}
+
+{% block content %}
+<div class="row mb-4">
+  <div class="col-12 text-center">
+    <h1 class="display-5 mb-2">智能图书推荐</h1>
+    {% if logged_in %}
+      <p class="text-muted">欢迎回来，{{ username }}。以下推荐会根据你的行为持续优化。</p>
+    {% else %}
+      <p class="text-muted">可浏览热门、新品、个性化和相似推荐，登录后可获得更精准结果。</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="recommend-section">
+  <h2 class="page-title"><i class="fas fa-fire text-danger"></i> 热门推荐</h2>
+  {{ product_grid(popular_products, '暂无热门推荐') }}
+</div>
+
+<div class="recommend-section mt-4">
+  <h2 class="page-title"><i class="fas fa-star text-success"></i> 新品推荐</h2>
+  {{ product_grid(new_arrival_products, '暂无新品，已回退为最新入库商品') }}
+</div>
+
+<div class="recommend-section mt-4">
+  <h2 class="page-title"><i class="fas fa-user-check text-primary"></i> 个性化推荐</h2>
+  {{ product_grid(personalized_products, '暂无个性化数据，已回退为热门推荐') }}
+</div>
+
+<div class="recommend-section mt-4">
+  <h2 class="page-title"><i class="fas fa-shuffle text-warning"></i> 相似推荐</h2>
+  {{ product_grid(similar_products, '暂无相似推荐，已回退为热门推荐') }}
+</div>
+{% endblock %}

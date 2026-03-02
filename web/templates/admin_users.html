@@ -1,0 +1,36 @@
+{% extends "admin_base.html" %}
+
+{% block title %}用户管理{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>用户管理</h2>
+  <a class="btn btn-secondary" href="{{ url_for('admin.index') }}">返回</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-bordered">
+    <thead>
+      <tr><th>ID</th><th>用户名</th><th>角色</th><th>创建时间</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.role or 'user' }}</td>
+        <td>{{ u.created_at }}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin.user_set_role', user_id=u.id) }}" class="d-inline">
+            <select name="role" class="form-select form-select-sm d-inline w-auto me-2">
+              <option value="user" {% if (u.role or 'user') == 'user' %}selected{% endif %}>user</option>
+              <option value="admin" {% if (u.role or 'user') == 'admin' %}selected{% endif %}>admin</option>
+            </select>
+            <button class="btn btn-sm btn-primary">保存</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

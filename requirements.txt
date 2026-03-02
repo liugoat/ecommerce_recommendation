@@ -1,0 +1,10 @@
+requests>=2.25.1
+beautifulsoup4>=4.9.3
+numpy>=1.21.0
+pandas>=1.3.0
+scikit-learn>=0.24.2
+Flask>=2.0.1
+# Optional admin and analytics
+# No extra pip packages required for the basic admin/dashboard scaffold
+python-dotenv>=0.21.0
+gunicorn>=20.1.0

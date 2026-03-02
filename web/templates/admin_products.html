@@ -1,0 +1,34 @@
+{% extends "admin_base.html" %}
+
+{% block title %}商品管理{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>商品管理</h2>
+  <a class="btn btn-success" href="{{ url_for('admin.product_new') }}">新建商品</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr><th>ID</th><th>名称</th><th>价格</th><th>销量</th><th>类目</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+    {% for p in products %}
+      <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.name }}</td>
+        <td>¥{{ "%.2f"|format(p.price) }}</td>
+        <td>{{ p.sales }}</td>
+        <td>{{ p.category }}</td>
+        <td>
+          <a class="btn btn-sm btn-primary" href="{{ url_for('admin.product_edit', product_id=p.id) }}">编辑</a>
+          <form method="post" action="{{ url_for('admin.product_delete', product_id=p.id) }}" style="display:inline" onsubmit="return confirm('确定删除?')">
+            <button class="btn btn-sm btn-danger">删除</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

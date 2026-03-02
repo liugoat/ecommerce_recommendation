@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}管理后台{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-3">
+    <div class="list-group sticky-top" style="margin-top:70px;">
+      <a class="list-group-item list-group-item-action" href="{{ url_for('admin.index') }}">概览</a>
+      <a class="list-group-item list-group-item-action" href="{{ url_for('admin.products') }}">商品管理</a>
+      <a class="list-group-item list-group-item-action" href="{{ url_for('admin.users') }}">用户管理</a>
+      <a class="list-group-item list-group-item-action" href="{{ url_for('admin.orders') }}">订单管理</a>
+      <a class="list-group-item list-group-item-action" href="{{ url_for('admin.logs') }}">操作日志</a>
+      <a class="list-group-item list-group-item-action" href="{{ url_for('admin_dashboard') }}">数据看板</a>
+      <a class="list-group-item list-group-item-action text-muted" href="#help">帮助</a>
+      <a class="list-group-item list-group-item-action text-danger" href="{{ url_for('admin.admin_logout') }}">登出</a>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div style="margin-top:70px;">
+      {% block admin_content %}{% endblock %}
+      <hr>
+      <div id="help" class="card p-3">
+        <h5>帮助 & 指南</h5>
+        <p class="small text-muted">该后台支持商品/用户/订单管理。管理员具有全部权限。若要为普通用户赋予管理员权限，请在用户管理中更改其角色。</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

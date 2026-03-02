@@ -1,0 +1,31 @@
+{% extends "admin_base.html" %}
+
+{% block title %}管理后台{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+  <div class="col-12">
+    <h1 class="mb-4">管理后台</h1>
+  </div>
+</div>
+<div class="row mb-3">
+  <div class="col-md-4">
+    <div class="card p-3">
+      <h5>商品总数</h5>
+      <p class="display-6">{{ products_count }}</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3">
+      <h5>用户总数</h5>
+      <p class="display-6">{{ users_count }}</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3">
+      <h5>行为记录数</h5>
+      <p class="display-6">{{ behaviors_count }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

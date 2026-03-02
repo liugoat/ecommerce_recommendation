@@ -1,0 +1,41 @@
+{% extends "admin_base.html" %}
+
+{% block title %}订单管理{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>订单列表</h2>
+  <a class="btn btn-outline-secondary" href="{{ url_for('admin.orders_export') }}">导出CSV</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr><th>ID</th><th>User</th><th>Product</th><th>Qty</th><th>Price</th><th>Status</th><th>Created</th><th>动作</th></tr>
+    </thead>
+    <tbody>
+    {% for o in orders %}
+      <tr>
+        <td>{{ o.id }}</td>
+        <td>{{ o.user_id }}</td>
+        <td>{{ o.product_id }}</td>
+        <td>{{ o.quantity }}</td>
+        <td>¥{{ "%.2f"|format(o.price) }}</td>
+        <td>{{ o.status }}</td>
+        <td>{{ o.created_at }}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin.orders_update_status', order_id=o.id) }}" class="d-inline">
+            <select name="status" class="form-select form-select-sm d-inline w-auto me-2">
+              <option value="pending" {% if o.status=='pending' %}selected{% endif %}>pending</option>
+              <option value="paid" {% if o.status=='paid' %}selected{% endif %}>paid</option>
+              <option value="shipped" {% if o.status=='shipped' %}selected{% endif %}>shipped</option>
+              <option value="cancelled" {% if o.status=='cancelled' %}selected{% endif %}>cancelled</option>
+            </select>
+            <button class="btn btn-sm btn-primary">更新</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

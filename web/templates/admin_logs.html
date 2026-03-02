@@ -1,0 +1,21 @@
+{% extends "admin_base.html" %}
+
+{% block admin_content %}
+<h2>操作日志</h2>
+<div class="table-responsive">
+  <table class="table table-sm">
+    <thead><tr><th>ID</th><th>时间</th><th>用户</th><th>动作</th><th>商品</th></tr></thead>
+    <tbody>
+      {% for l in logs %}
+      <tr>
+        <td>{{ l.id }}</td>
+        <td>{{ l.timestamp }}</td>
+        <td>{{ l.username or l.user_id }}</td>
+        <td>{{ l.action }}</td>
+        <td>{{ l.product_name or l.product_id }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
